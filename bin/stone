@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Stone\Command;
+
+error_reporting(-1);
+@ini_set('display_errors', 1);
+@ini_set('memory_limit', '512M');
+
+$cli = new Application('Stone', '0.1-DEV');
+
+$cli->addCommands(array(
+    new Command\MirrorCommand(),
+));
+
+$cli->run();
