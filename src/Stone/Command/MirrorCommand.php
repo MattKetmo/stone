@@ -4,6 +4,7 @@ namespace Stone\Command;
 
 use Composer\Factory;
 use Composer\IO\NullIO;
+use Composer\Json\JsonFile;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,6 +38,7 @@ class MirrorCommand extends Command
         $dm = $composer->getDownloadManager();
         $dm->setPreferSource(true);
 
+        $repositories = array();
         $root = $composer->getPackage();
         foreach ($root->getRequires() as $link) {
             // Lookup for the last dev package
@@ -45,8 +47,24 @@ class MirrorCommand extends Command
             $name = $package->getPrettyName();
             $targetDir = $ouputDir.'/'.$name;
 
-            $output->writeln('<info>Downloading</info> '.$name);
+            $output->writeln(sprintf('<info>Downloading</info> <comment>%s</comment>', $name));
             $dm->download($package, $targetDir);
+
+            $repositories[] = array(
+                'type' => $package->getSourceType(),
+                'url'  => 'file://'.realpath($targetDir)
+            );
         }
+
+        $output->writeln('<info>Dumping</info> satis config to <comment>satis.json</comment>');
+        $file = new JsonFile('satis.json');
+        $config = array(
+            'name' => 'Stone repositories',
+            'homepage' => 'http://packages.example.org',
+            'repositories' => $repositories,
+            'require-all' => true
+        );
+
+        $file->write($config);
     }
 }
