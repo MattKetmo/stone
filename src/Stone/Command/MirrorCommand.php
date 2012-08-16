@@ -31,15 +31,17 @@ class MirrorCommand extends Command
             throw new \LogicException(sprintf('File %s doen\'t exist', $filename));
         }
 
+        // Create composer model
         $io = new NullIO();
         $composer  = Factory::create($io, $filename);
 
+        $root = $composer->getPackage();
         $rm = $composer->getRepositoryManager();
         $dm = $composer->getDownloadManager();
         $dm->setPreferSource(true);
 
+        // Retrieves all requires and download them
         $repositories = array();
-        $root = $composer->getPackage();
         foreach ($root->getRequires() as $link) {
             // Lookup for the last dev package
             $package = $rm->findPackage($link->getTarget(), '9999999-dev');
@@ -56,6 +58,7 @@ class MirrorCommand extends Command
             );
         }
 
+        // Dump Satis configuration file
         $output->writeln('<info>Dumping</info> satis config to <comment>satis.json</comment>');
         $file = new JsonFile('satis.json');
         $config = array(
