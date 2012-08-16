@@ -2,9 +2,12 @@
 
 namespace Stone\Command;
 
+use Composer\Composer;
 use Composer\Factory;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Package\Dumper\ArrayDumper;
+use Composer\Package\Loader\RootPackageLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,30 +36,49 @@ class MirrorCommand extends Command
 
         // Create composer model
         $io = new NullIO();
-        $composer  = Factory::create($io, $filename);
-
-        $root = $composer->getPackage();
+        $composer = Factory::create($io, $filename);
         $rm = $composer->getRepositoryManager();
         $dm = $composer->getDownloadManager();
         $dm->setPreferSource(true);
 
+        // Retrieves installed packages
+        $installedFile = new JsonFile($ouputDir.'/installed.json');
+        $intalledPackages = $this->getInstalledPackages($composer, $installedFile);
+
         // Retrieves all requires and download them
         $repositories = array();
-        foreach ($root->getRequires() as $link) {
+        $packages = array();
+        foreach ($composer->getPackage()->getRequires() as $link) {
             // Lookup for the last dev package
             $package = $rm->findPackage($link->getTarget(), '9999999-dev');
 
             $name = $package->getPrettyName();
             $targetDir = $ouputDir.'/'.$name;
 
-            $output->writeln(sprintf('<info>Downloading</info> <comment>%s</comment>', $name));
-            $dm->download($package, $targetDir);
+            if (isset($intalledPackages[$name])) {
+                // Updating
+                $output->writeln(sprintf('<info>Updating</info> <comment>%s</comment>', $name));
+                $dm->update($intalledPackages[$name], $package, $targetDir);
+            } else {
+                // Downloading
+                $output->writeln(sprintf('<info>Downloading</info> <comment>%s</comment>', $name));
+                $dm->download($package, $targetDir);
+            }
 
+            $packages[] = $package;
             $repositories[] = array(
                 'type' => $package->getSourceType(),
                 'url'  => 'file://'.realpath($targetDir)
             );
         }
+
+        // Dump installed packages to installed.json
+        $dumper = new ArrayDumper();
+        $data = array();
+        foreach ($packages as $package) {
+            $data[] = $dumper->dump($package);
+        }
+        $installedFile->write($data);
 
         // Dump Satis configuration file
         $output->writeln('<info>Dumping</info> satis config to <comment>satis.json</comment>');
@@ -69,5 +91,28 @@ class MirrorCommand extends Command
         );
 
         $file->write($config);
+    }
+
+    /**
+     * Get installed packages.
+     *
+     * @param Composer $composer Composer model
+     * @param JsonFile $file     The installed.json file
+     *
+     * @return array Array of PackageInterface
+     */
+    private function getInstalledPackages(Composer $composer, JsonFile $file)
+    {
+        $manager = $composer->getRepositoryManager();
+        $config = $composer->getConfig();
+        $loader = new RootPackageLoader($manager, $config);
+
+        $packages = array();
+        foreach ($file->read() as $config) {
+            $package = $loader->load($config);
+            $packages[$package->getPrettyName()] = $package;
+        }
+
+        return $packages;
     }
 }
