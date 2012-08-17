@@ -10,6 +10,7 @@ use Composer\Json\JsonFile;
 use Composer\Package\Dumper\ArrayDumper;
 use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\PackageInterface;
+use Composer\Repository\RepositoryManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -90,11 +91,24 @@ abstract class BaseCommand extends Command
 
         $packages = array();
         foreach ($requires as $link) {
-            $package = $manager->findPackage($link->getTarget(), '9999999-dev');
+            $package = $this->findDevPackage($manager, $link->getTarget());
             $packages[$package->getPrettyName()] = $package;
         }
 
         return $packages;
+    }
+
+    /**
+     * Find the dev-master package.
+     *
+     * @param RepositoryManager $manager Composer repository manger
+     * @param string            $name    Package's name
+     *
+     * @return PackageInterface The found package
+     */
+    protected function findDevPackage(RepositoryManager $manager, $name)
+    {
+        return $manager->findPackage($name, '9999999-dev');
     }
 
     /**

@@ -14,6 +14,7 @@ $cli = new Application('Stone', '0.1-DEV');
 
 $cli->addCommands(array(
     new Command\MirrorCommand(),
+    new Command\UpdateCommand(),
 ));
 
 $cli->run();
