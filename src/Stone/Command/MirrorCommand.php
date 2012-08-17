@@ -40,7 +40,7 @@ class MirrorCommand extends Command
 
         // Retrieves installed packages
         $installedFile = new JsonFile($outputDir.'/installed.json');
-        $installedPackages = $this->getInstalledPackages($composer, $installedFile);
+        $installedPackages = $installedFile->exists() ? $this->getInstalledPackages($composer, $installedFile) : array();
 
         // Retrieves all requires and download them
         $repositories = array();
