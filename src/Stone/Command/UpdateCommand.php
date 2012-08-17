@@ -44,11 +44,14 @@ class UpdateCommand extends BaseCommand
             $name = $initialPackage->getPrettyName();
             $targetDir = $outputDir.'/'.$name;
 
-            $output->writeln(sprintf('<info>Updating</info> <comment>%s</comment>', $name));
-
             $package = $this->findDevPackage($composer->getRepositoryManager(), $initialPackage->getPrettyName());
 
-            // @todo check if packages version are aifferent
+            if ($package->getSourceReference() === $initialPackage->getSourceReference()) {
+                $output->writeln(sprintf('<info>Skiping</info> <comment>%s</comment> (already up to date)', $name));
+                continue;
+            }
+
+            $output->writeln(sprintf('<info>Updating</info> <comment>%s</comment>', $name));
             $this->fetchPackage($composer->getDownloadManager(), $package, $targetDir, $initialPackage);
 
             $packages[$name] = $package;
