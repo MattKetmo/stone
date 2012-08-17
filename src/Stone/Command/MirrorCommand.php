@@ -3,17 +3,9 @@
 namespace Stone\Command;
 
 use Composer\Composer;
-use Composer\Factory;
-use Composer\IO\NullIO;
-use Composer\Json\JsonFile;
-use Composer\Package\Dumper\ArrayDumper;
-use Composer\Package\Loader\RootPackageLoader;
-use Composer\Package\Loader;
-use Composer\Package\PackageInterface;
 use Composer\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MirrorCommand extends BaseCommand
@@ -50,7 +42,7 @@ class MirrorCommand extends BaseCommand
         foreach ($packagesToInstall as $package) {
             $name = $package->getPrettyName();
             $targetDir = $outputDir.'/'.$name;
-            
+
             $initialPackage = isset($installedPackages[$name]) ? $installedPackages[$name] : null;
 
             $output->writeln(sprintf(

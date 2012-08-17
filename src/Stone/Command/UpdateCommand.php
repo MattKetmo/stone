@@ -3,17 +3,9 @@
 namespace Stone\Command;
 
 use Composer\Composer;
-use Composer\Factory;
-use Composer\IO\NullIO;
-use Composer\Json\JsonFile;
-use Composer\Package\Dumper\ArrayDumper;
-use Composer\Package\Loader\RootPackageLoader;
-use Composer\Package\Loader;
-use Composer\Package\PackageInterface;
 use Composer\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateCommand extends BaseCommand
