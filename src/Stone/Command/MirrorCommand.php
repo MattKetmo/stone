@@ -12,6 +12,7 @@ use Composer\Package\PackageInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MirrorCommand extends Command
@@ -23,12 +24,13 @@ class MirrorCommand extends Command
             ->setDescription('Mirror repositories')
             ->addArgument('file', InputArgument::REQUIRED, 'Json file to use')
             ->addArgument('output-dir', InputArgument::REQUIRED, 'Location where to download repositories')
+            ->addOption('update-old', null, InputOption::VALUE_NONE, 'Also update previous downloaded packages')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filename = $input->getArgument('file');
+        $filename  = $input->getArgument('file');
         $outputDir = $input->getArgument('output-dir');
 
         if (!file_exists($filename)) {
@@ -41,11 +43,16 @@ class MirrorCommand extends Command
         // Retrieves installed packages
         $installedFile = new JsonFile($outputDir.'/installed.json');
         $installedPackages = $installedFile->exists() ? $this->getInstalledPackages($composer, $installedFile) : array();
+        $packagesToInstall = $this->getPackagesToInstall($composer);
+
+        if ($input->getOption('update-old')) {
+            $packagesToInstall += $installedPackages;
+        }
 
         // Retrieves all requires and download them
         $repositories = array();
         $packages = array();
-        foreach ($this->getPackagesToInstall($composer) as $package) {
+        foreach ($packagesToInstall as $package) {
             $name = $package->getPrettyName();
             $targetDir = $outputDir.'/'.$name;
 
@@ -104,7 +111,7 @@ class MirrorCommand extends Command
         $packages = array();
         foreach ($requires as $link) {
             $package = $manager->findPackage($link->getTarget(), '9999999-dev');
-            $packages[] = $package;
+            $packages[$package->getPrettyName()] = $package;
         }
 
         return $packages;
