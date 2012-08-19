@@ -10,9 +10,6 @@ error_reporting(-1);
 @ini_set('display_errors', 1);
 @ini_set('memory_limit', '512M');
 
-// Don't use global config
-putenv('COMPOSER_HOME=/tmp');
-
 $cli = new Application('Stone', '0.1-DEV');
 
 $cli->addCommands(array(

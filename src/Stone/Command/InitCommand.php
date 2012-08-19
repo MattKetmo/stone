@@ -28,6 +28,9 @@ class InitCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $composer = $this->getComposer();
+        $config = $composer->getConfig();
+
         $isInitDone = true;
 
         // Init packages.json
@@ -42,13 +45,7 @@ class InitCommand extends BaseCommand
         }
 
         // Init ~/composer/config.json
-        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            $home = getenv('APPDATA').'/Composer';
-        } else {
-            $home = getenv('HOME').'/.composer';
-        }
-
-        $file = new JsonFile($home.'/config.json');
+        $file = new JsonFile($this->getComposerHome().'/config.json');
         $config = $file->exists() ? $file->read() : array() ;
         if (!isset($config['repositories'])) {
             $config['repositories'] = array();

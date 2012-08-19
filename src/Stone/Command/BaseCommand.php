@@ -34,29 +34,54 @@ abstract class BaseCommand extends Command
      */
     protected function getComposer($localConfig = null)
     {
-        return Factory::create(new NullIO(), $localConfig);
-    }
+        $composer = Factory::create(new NullIO(), $localConfig);
 
-    /**
-     * @see Factory::createConfig()
-     */
-    protected function getRepositoryDirectory()
-    {
-        // load main Composer configuration
-        if (!$home = getenv('COMPOSER_STONE_HOME')) {
-            if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-                $home = getenv('APPDATA') . '/Composer/Stone';
-            } else {
-                $home = getenv('HOME') . '/.composer/stone';
+        // Remove Stone repository from the repositories
+        $config = $composer->getConfig();
+        foreach ($config->getRepositories() as $key => $repository) {
+            if ($repository['type'] === 'composer' && $repository['url'] === 'file://'.$this->getRepositoryDirectory()) {
+                $config->merge(array('repositories' => array($key => false)));
             }
         }
 
-        // Ensure directory exists
-        if (!is_dir($home)) {
-            @mkdir($home, 0777, true);
+        return $composer;
+    }
+
+    /**
+     * Retrieves Composer global configuration directory.
+     *
+     * @see Factory::createConfig()
+     *
+     * @return string
+     */
+    protected function getComposerHome()
+    {
+        if (!$home = getenv('COMPOSER_HOME')) {
+            if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+                $home = getenv('APPDATA') . '/Composer';
+            } else {
+                $home = getenv('HOME') . '/.composer';
+            }
         }
 
         return $home;
+    }
+
+    /**
+     * Get default directory where are downloaded repositories.
+     *
+     * @return string
+     */
+    protected function getRepositoryDirectory()
+    {
+        $dir = $this->getComposerHome().'/stone';
+
+        // Ensure directory exists
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0777, true);
+        }
+
+        return $dir;
     }
 
     /**
