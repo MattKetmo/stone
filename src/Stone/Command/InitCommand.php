@@ -28,18 +28,51 @@ class InitCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $isInitDone = true;
+
+        // Init packages.json
         $directory = $this->getRepositoryDirectory();
 
         $file = new JsonFile($directory.'/packages.json');
 
-        if ($file->exists()) {
-            $output->writeln('<info>Nothing to initialize</info>');
-
-            return;
+        if (!$file->exists()) {
+            $output->writeln('<info>Initializing composer repository in</info> <comment>'.$directory.'</comment>');
+            $file->write(array('packages' => (object) array()));
+            $isInitDone = false;
         }
 
-        $output->writeln('<info>Initializing composer repository in</info> <comment>'.$directory.'</comment>');
+        // Init ~/composer/config.json
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $home = getenv('APPDATA').'/Composer';
+        } else {
+            $home = getenv('HOME').'/.composer';
+        }
 
-        $file->write(array('packages' => (object) array()));
+        $file = new JsonFile($home.'/config.json');
+        $config = $file->exists() ? $file->read() : array() ;
+        if (!isset($config['repositories'])) {
+            $config['repositories'] = array();
+        }
+
+        $isRepoActived = false;
+        foreach ($config['repositories'] as $repo) {
+            if ($repo['type'] === 'composer' && $repo['url'] === 'file://'.$directory) {
+                $isRepoActived = true;
+            }
+        }
+
+        if (!$isRepoActived) {
+            $output->writeln('<info>Writing stone repository in global configuration</info>');
+            $config['repositories'][] = array(
+                'type' => 'composer',
+                'url'  => 'file://'.$directory,
+            );
+            $file->write($config);
+            $isInitDone = false;
+        }
+
+        if ($isInitDone) {
+            $output->writeln('<info>It seems stone is already configured</info>');
+        }
     }
 }
