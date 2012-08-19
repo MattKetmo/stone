@@ -28,6 +28,8 @@ class MirrorCommand extends BaseCommand
             throw new \LogicException(sprintf('File %s doen\'t exist', $filename));
         }
 
+        $output->writeln(sprintf('<info>Mirroring repositories from <comment>%s</comment></info>', $filename));
+
         // Create composer model
         $composer = $this->getComposer($filename);
 

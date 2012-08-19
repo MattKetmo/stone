@@ -20,6 +20,8 @@ class UpdateCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('<info>Updating proxy repositories</info>');
+
         $outputDir = $this->getRepositoryDirectory();
 
         // Create composer model
