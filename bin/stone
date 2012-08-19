@@ -16,6 +16,7 @@ putenv('COMPOSER_HOME=/tmp');
 $cli = new Application('Stone', '0.1-DEV');
 
 $cli->addCommands(array(
+    new Command\InitCommand(),
     new Command\MirrorCommand(),
     new Command\UpdateCommand(),
 ));

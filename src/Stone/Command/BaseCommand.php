@@ -29,6 +29,28 @@ abstract class BaseCommand extends Command
     }
 
     /**
+     * @see Factory::createConfig()
+     */
+    protected function getRepositoryDirectory()
+    {
+        // load main Composer configuration
+        if (!$home = getenv('COMPOSER_STONE_HOME')) {
+            if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+                $home = getenv('APPDATA') . '/Composer/Stone';
+            } else {
+                $home = getenv('HOME') . '/.composer/stone';
+            }
+        }
+
+        // Ensure directory exists
+        if (!is_dir($home)) {
+            @mkdir($home, 0777, true);
+        }
+
+        return $home;
+    }
+
+    /**
      * Get installed packages from the installed.json file.
      *
      * @param Composer $composer  Composer model
