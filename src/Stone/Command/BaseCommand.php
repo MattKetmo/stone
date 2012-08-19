@@ -31,23 +31,39 @@ abstract class BaseCommand extends Command
     /**
      * Create a composer model.
      *
-     * @param string $localConfig
+     * @param string $localConfig The local configuration file
      *
      * @return Composer
      */
     protected function getComposer($localConfig = null)
     {
-        $composer = Factory::create(new NullIO(), $localConfig);
+        $config = array();
 
-        // Remove Stone repository from the repositories
-        $config = $composer->getConfig();
-        foreach ($config->getRepositories() as $key => $repository) {
-            if ($repository['type'] === 'composer' && $repository['url'] === 'file://'.$this->getRepositoryDirectory()) {
-                $config->merge(array('repositories' => array($key => false)));
+        // Get local configuration
+        if (null !== $localConfig) {
+            $file = new JsonFile($localConfig);
+
+            if ($file->exists()) {
+                $config = $file->read();
             }
         }
 
-        return $composer;
+        // Hack: retrieve global configuration to remove stone repository by its key
+        $file = new JsonFile($this->getComposerHome().'/config.json');
+        if ($file->exists()) {
+            $data = $file->read();
+
+            if (isset($data['repositories'])) {
+                foreach ($data['repositories'] as $key => $repository) {
+                    if ($repository['type'] === 'composer' && $repository['url'] === 'file://'.$this->getRepositoryDirectory()) {
+                        $config = array_merge($config, array('repositories' => array($key => false)));
+                    }
+                }
+            }
+        }
+
+
+        return Factory::create(new NullIO(), $config);
     }
 
     /**
