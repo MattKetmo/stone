@@ -197,22 +197,23 @@ abstract class BaseCommand extends Command
             }
         }
 
-
-        // Keep previous packages
-        if ($repoJson->exists()) {
-            $repo = $repoJson->read();
-        }
-
-        if (!isset($repo['packages'])) {
-            $repo = array('packages' => array());
-        }
-
+        $repo = array('packages' => array());
         $dumper = new ArrayDumper();
         foreach ($packages as $package) {
             $name = $package->getPrettyName();
             $version = $package->getPrettyVersion();
 
             $repo['packages'][$name][$version] = $dumper->dump($package);
+        }
+
+        // Keep previous packages information
+        if ($repoJson->exists()) {
+            $data = $repoJson->read();
+            foreach ($data['packages'] as $name => $info) {
+                if (!isset($repo['packages'][$name])) {
+                    $repo['packages'][$name] = $info;
+                }
+            }
         }
 
         $repoJson->write($repo);

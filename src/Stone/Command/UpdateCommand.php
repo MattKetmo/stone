@@ -48,9 +48,16 @@ class UpdateCommand extends BaseCommand
             $this->fetchPackage($composer->getDownloadManager(), $package, $targetDir, $initialPackage);
 
             $packages[$name] = $package;
+            $repositories[] = array(
+                'type' => $package->getSourceType(),
+                'url'  => 'file://'.realpath($outputDir.'/'.$package->getName())
+            );
         }
 
         $output->writeln('<info>Saving</info> updated repositories');
         $this->dumpInstalledPackages($installedPackages, $outputDir);
+
+        $output->writeln('<info>Update packages.json</info>');
+        $this->dumpPackagesJson($composer, $repositories, $outputDir);
     }
 }
