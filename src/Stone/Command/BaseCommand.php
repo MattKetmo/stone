@@ -170,4 +170,51 @@ abstract class BaseCommand extends Command
 
         $file->write($config);
     }
+
+    /**
+     * Dump packages.json file used by composer repository.
+     *
+     * @param Composer $composer     The Composer model
+     * @param array    $repositories The repositories to scan
+     * @param string   $directory    The output directory
+     */
+    protected function dumpPackagesJson(Composer $composer, array $repositories, $directory)
+    {
+        $repoJson = new JsonFile($directory.'/packages.json');
+        $manager = $composer->getRepositoryManager();
+
+        $packages = array();
+        foreach ($repositories as $config) {
+            $repository = $manager->createRepository($config['type'], $config);
+
+            foreach ($repository->getPackages() as $package) {
+                // skip aliases
+                if ($package instanceof AliasPackage) {
+                    continue;
+                }
+
+                $packages[] = $package;
+            }
+        }
+
+
+        // Keep previous packages
+        if ($repoJson->exists()) {
+            $repo = $repoJson->read();
+        }
+
+        if (!isset($repo['packages'])) {
+            $repo = array('packages' => array());
+        }
+
+        $dumper = new ArrayDumper();
+        foreach ($packages as $package) {
+            $name = $package->getPrettyName();
+            $version = $package->getPrettyVersion();
+
+            $repo['packages'][$name][$version] = $dumper->dump($package);
+        }
+
+        $repoJson->write($repo);
+    }
 }

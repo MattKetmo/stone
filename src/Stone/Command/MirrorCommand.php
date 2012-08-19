@@ -39,7 +39,6 @@ class MirrorCommand extends BaseCommand
 
         // Retrieves all requires and download them
         $repositories = array();
-        $packages = array();
         foreach ($packagesToInstall as $package) {
             $name = $package->getPrettyName();
             $targetDir = $outputDir.'/'.$name;
@@ -52,21 +51,17 @@ class MirrorCommand extends BaseCommand
 
             $this->fetchPackage($composer->getDownloadManager(), $package, $targetDir, $initialPackage);
 
-            $packages[$name] = $package;
-
-            // Satis repositories
+            $installedPackages[$name] = $package;
             $repositories[] = array(
                 'type' => $package->getSourceType(),
                 'url'  => 'file://'.realpath($targetDir)
             );
         }
 
-        $installedPackages = array_merge($installedPackages, $packages);
-
         $output->writeln('<info>Saving</info> installed repositories');
         $this->dumpInstalledPackages($installedPackages, $outputDir);
 
-        $output->writeln('<info>Dumping</info> satis config to <comment>satis.json</comment>');
-        $this->dumpSatisConfig($repositories, $outputDir.'/satis.json');
+        $output->writeln('<info>Dump packages.json</info>');
+        $this->dumpPackagesJson($composer, $repositories, $outputDir);
     }
 }
