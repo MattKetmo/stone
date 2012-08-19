@@ -5,8 +5,8 @@
  *
  * (c) Matthieu Moquet <matthieu@moquet.net>
  *
- * For the full copyright and license information, please view
- * the license that is located at the bottom of this file.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Stone;
@@ -14,6 +14,9 @@ namespace Stone;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
+/**
+ * @author Matthieu Moquet <matthieu@moquet.net>
+ */
 class Compiler
 {
     public function compile($pharFile = 'stone.phar')

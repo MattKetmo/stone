@@ -5,19 +5,24 @@
  *
  * (c) Matthieu Moquet <matthieu@moquet.net>
  *
- * For the full copyright and license information, please view
- * the license that is located at the bottom of this file.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Stone\Command;
 
 use Composer\Json\JsonFile;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @author Matthieu Moquet <matthieu@moquet.net>
+ */
 class InitCommand extends BaseCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -26,6 +31,9 @@ class InitCommand extends BaseCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $composer = $this->getComposer();
