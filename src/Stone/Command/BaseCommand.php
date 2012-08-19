@@ -119,6 +119,11 @@ abstract class BaseCommand extends Command
 
         $packages = array();
         foreach ($requires as $link) {
+            if ('php' === $link->getTarget()) {
+                // skip php extension dependencies
+                continue;
+            }
+
             $package = $this->findDevPackage($manager, $link->getTarget());
             $packages[$package->getPrettyName()] = $package;
         }
