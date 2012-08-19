@@ -192,26 +192,6 @@ abstract class BaseCommand extends Command
     }
 
     /**
-     * Dump Satis configuration file.
-     *
-     * @param array  $repositories The installed packages
-     * @param string $file         The configuration file
-     */
-    protected function dumpSatisConfig(array $repositories, $file)
-    {
-        $file = new JsonFile($file);
-
-        $config = array(
-            'name' => 'Stone repositories',
-            'homepage' => 'http://packages.example.org',
-            'repositories' => $repositories,
-            'require-all' => true
-        );
-
-        $file->write($config);
-    }
-
-    /**
      * Dump packages.json file used by composer repository.
      *
      * @param Composer $composer     The Composer model

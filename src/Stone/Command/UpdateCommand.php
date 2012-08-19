@@ -52,9 +52,9 @@ class UpdateCommand extends BaseCommand
         $packages = array();
         foreach ($installedPackages as $initialPackage) {
             $name = $initialPackage->getPrettyName();
-            $targetDir = $outputDir.'/'.$name;
+            $targetDir = $outputDir.'/'.$name.'/sources';
 
-            $package = $this->findDevPackage($composer->getRepositoryManager(), $initialPackage->getPrettyName());
+            $package = $this->findDevPackage($composer->getRepositoryManager(), $name);
 
             if ($package->getSourceReference() === $initialPackage->getSourceReference()) {
                 $output->writeln(sprintf('<info>Skiping</info> <comment>%s</comment> (already up to date)', $name));
@@ -67,7 +67,7 @@ class UpdateCommand extends BaseCommand
             $packages[$name] = $package;
             $repositories[] = array(
                 'type' => $package->getSourceType(),
-                'url'  => 'file://'.realpath($outputDir.'/'.$package->getName())
+                'url'  => 'file://'.realpath($targetDir)
             );
         }
 

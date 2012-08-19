@@ -59,7 +59,7 @@ class MirrorCommand extends BaseCommand
         $repositories = array();
         foreach ($packagesToInstall as $package) {
             $name = $package->getPrettyName();
-            $targetDir = $outputDir.'/'.$name;
+            $targetDir = $outputDir.'/'.$name.'/sources';
 
             $initialPackage = isset($installedPackages[$name]) ? $installedPackages[$name] : null;
 
