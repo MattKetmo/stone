@@ -2,8 +2,7 @@
     "name": "mattketmo/stone",
     "description": "Proxy for Composer repositories",
     "require": {
-        "composer/composer": "dev-master",
-        "composer/satis": "dev-master"
+        "composer/composer": "dev-master"
     },
     "autoload": {
         "psr-0": { "Stone": "src" }

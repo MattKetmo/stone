@@ -1,3 +1,4 @@
 /vendor
 /repositories
 composer.lock
+stone.phar
