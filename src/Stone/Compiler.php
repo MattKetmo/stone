@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of Stone.
+ *
+ * (c) Matthieu Moquet <matthieu@moquet.net>
+ *
+ * For the full copyright and license information, please view
+ * the license that is located at the bottom of this file.
+ */
+
 namespace Stone;
 
 use Symfony\Component\Finder\Finder;
