@@ -16,14 +16,13 @@ class MirrorCommand extends BaseCommand
             ->setName('mirror')
             ->setDescription('Mirror repositories')
             ->addArgument('file', InputArgument::REQUIRED, 'Json file to use')
-            ->addArgument('output-dir', InputArgument::REQUIRED, 'Location where to download repositories')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filename  = $input->getArgument('file');
-        $outputDir = $input->getArgument('output-dir');
+        $outputDir = $this->getRepositoryDirectory();
 
         if (!file_exists($filename)) {
             throw new \LogicException(sprintf('File %s doen\'t exist', $filename));

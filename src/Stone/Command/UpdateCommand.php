@@ -15,13 +15,12 @@ class UpdateCommand extends BaseCommand
         $this
             ->setName('update')
             ->setDescription('Update mirroed repositories')
-            ->addArgument('output-dir', InputArgument::REQUIRED, 'Location of downloaded repositories')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $outputDir = $input->getArgument('output-dir');
+        $outputDir = $this->getRepositoryDirectory();
 
         // Create composer model
         $composer = $this->getComposer();
