@@ -1,5 +1,7 @@
 # Stone - Proxy for Composer
 
+This project is currently *work in progress*.
+
 Stone is a repository proxy for [Composer][]. It will create a local repository
 with all the packages you want to mirror. Then you can use the global
 configuration of Composer to fetch the packages from this local repository
@@ -21,11 +23,12 @@ Compile it to a PHAR file:
 Now its recommended to `chmod +x stone.phar` and make it available into your
 `$PATH` to use it everywhere you need.
 
-You can automatically initialize the local repository with the `init` command:
+You can **automatically** initialize the local repository with the `init`
+command:
 
     stone.phar init
 
-Or you can do it manually by editing the global Composer configuration
+Or you can do it **manually** by editing the global Composer configuration
 (`~/.composer/config.json` on Unix system):
 
     {
@@ -64,3 +67,8 @@ them from Packagist.
 - Packages replacement have strange behaviour. For instance, if you've mirror
   "symfony/symfony", then requiring "symfony/console" will fetch
   "symfony/symfony" (and all its dependencies) instead of just the "subtree"
+
+- For now, it's totally indifferent to the dependences between packages, so it
+  will **only** download the requires of your composer. You can have
+  a `dummy.json` file inside your `~/.composer` folder and put all the packages
+  you want to mirror
