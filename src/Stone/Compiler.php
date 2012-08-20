@@ -89,7 +89,7 @@ class Compiler
         // disabled for interoperability with systems without gzip ext
         // $phar->compressFiles(\Phar::GZ);
 
-        //$this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
 
         unset($phar);
     }
