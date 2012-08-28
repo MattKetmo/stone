@@ -16,6 +16,14 @@ Download the source:
 
     git clone git://github.com/mattketmo/stone.git
 
+Ensure that you can compile PHAR files in `php.ini`:
+
+```ini
+[Phar]
+; http://php.net/phar.readonly
+phar.readonly = Off
+```
+
 Compile it to a PHAR file:
 
     ./bin/compile
