@@ -161,12 +161,19 @@ abstract class BaseCommand extends Command
 
         $packages = array();
         foreach ($requires as $link) {
-            if ('php' === $link->getTarget()) {
-                // skip php extension dependencies
+            $target = $link->getTarget();
+
+            // skip php extension dependencies
+            if ('php' === $target || 0 === stripos($target, 'ext-')) {
                 continue;
             }
 
-            $package = $this->findDevPackage($manager, $link->getTarget());
+            $package = $this->findDevPackage($manager, $target);
+
+            if (null === $package) {
+                throw new \RuntimeException('Can\'t find dev package for '.$target);
+            }
+
             $packages[$package->getPrettyName()] = $package;
         }
 
