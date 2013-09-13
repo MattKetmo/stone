@@ -1,6 +1,7 @@
 # Stone - Proxy for Composer
 
-This project is currently *work in progress*.
+This project is *not maintained anymore*. 
+Btw, do you know that [Composer dist packages are automatically cached](http://moquet.net/blog/5-features-about-composer-php/#4_prefer_dist_packages_and_cache_them)? 
 
 Stone is a repository proxy for [Composer][]. It will create a local repository
 with all the packages you want to mirror. Then you can use the global
